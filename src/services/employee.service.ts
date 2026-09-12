@@ -35,3 +35,5 @@ class EmployeeService {
     await this.repository.findEmployeeById(id);
   }
 }
+
+export default EmployeeService;
