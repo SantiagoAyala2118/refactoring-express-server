@@ -1,26 +1,35 @@
 import { Employee } from "../models/employee.model.ts";
+import {
+  CreateEmployeeInput,
+  EmployeeData,
+  UpdateEmployeeInput,
+} from "../interfaces/employee.dto.ts";
 
-export interface EmployeeData {
-  name: string;
-  position: string;
-  baseSalary: number;
-  yearsOfService: number;
-}
-
-class EmployeeRepository {
+export class EmployeeRepository {
   private employee = Employee;
 
-  async createEmployee(data: EmployeeData): Promise<void> {
-    await this.employee.create(data);
+  async createEmployee(data: CreateEmployeeInput): Promise<EmployeeData> {
+    return await this.employee.create(data);
   }
 
-  async findAllEmployees(): Promise<void> {
-    await this.employee.find();
+  async findAllEmployees(): Promise<EmployeeData[]> {
+    return await this.employee.find();
   }
 
-  async findEmployeeById(id: string): Promise<void> {
-    await this.employee.findById(id);
+  async findEmployeeById(employeeId: string): Promise<EmployeeData | null> {
+    return await this.employee.findById(employeeId);
+  }
+
+  async updateEmployee(
+    employeeId: string,
+    data: UpdateEmployeeInput,
+  ): Promise<UpdateEmployeeInput | null> {
+    return await this.employee.findByIdAndUpdate(employeeId, data, {
+      new: true,
+    });
+  }
+
+  async deleteEmployee(employeeId: string) {
+    await this.employee.findByIdAndDelete(employeeId);
   }
 }
-
-export default EmployeeRepository;
