@@ -5,6 +5,7 @@ import type {
   CreateEmployeeInput,
   UpdateEmployeeInput,
 } from "../interfaces/employee.dto.ts";
+import { notDeepEqual } from "assert";
 
 class EmployeeService {
   private repository: EmployeeRepository;
@@ -76,6 +77,11 @@ class EmployeeService {
     employeeId: string,
     data: UpdateEmployeeInput,
   ): Promise<UpdateEmployeeInput | null> {
+    const employee = await this.repository.findEmployeeById(employeeId);
+    if (!employee) {
+      throw new NotFoundError("El empleado que intenta actualizar no existe");
+    }
+
     //* Nombre invalido
     if (data.name !== undefined && typeof data.name !== "string") {
       throw new BadRequestError("El nombre y/o la posicion son invalidos");
@@ -123,14 +129,17 @@ class EmployeeService {
       data,
     );
 
-    if (!updatedEmployee) {
-      throw new NotFoundError("El empleado que intenta actualizar no existe");
-    }
-
     return updatedEmployee;
   }
 
   async deleteEmployee(employeeId: string) {
+    const employee = await this.repository.findEmployeeById(employeeId);
+    if (!employee) {
+      throw new NotFoundError(
+        "El empleado que intenta eliminar no existe o ya ha sido eliminado",
+      );
+    }
+
     await this.repository.deleteEmployee(employeeId);
   }
 }
